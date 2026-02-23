@@ -10,48 +10,44 @@ interface RequestSchemas {
 }
 
 export const validateRequest = (schemas: RequestSchemas): MiddlewareFunction => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const errors: string[] = [];
+return (req: Request, res: Response, next: NextFunction) => {
+    const validatePart = (schema: ObjectSchema, data: any) => {
+      return schema.validate(data, {
+        abortEarly: true, 
+        stripUnknown: true,
+      });
+    };
 
-      const validatePart = (
-        schema: ObjectSchema,
-        data: any,
-        partName: "Body" | "Params" | "Query"
-      ) => {
-        const { error, value } = schema.validate(data, {
-          abortEarly: false,
-          stripUnknown: true,
-        });
-
-        if (error) {
-          errors.push(
-            ...error.details.map((d) => `${partName}: ${d.message}`)
-          );
-          return data;
-        }
-
-        return value;
-      };
-
-      if (schemas.body) req.body = validatePart(schemas.body, req.body, "Body");
-      if (schemas.params)
-        req.params = validatePart(schemas.params, req.params, "Params");
-      if (schemas.query)
-        req.query = validatePart(schemas.query, req.query, "Query");
-
-      if (errors.length > 0) {
-        // IMPORTANT: update this string formatting if the video shows different output
+    if (schemas.body) {
+      const { error, value } = validatePart(schemas.body, req.body);
+      if (error) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({
-          error: `Validation error: ${errors.join(", ")}`,
+          message: `Validation error: ${error.details[0].message}`,
         });
       }
-
-      next();
-    } catch (err) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({
-        error: (err as Error).message,
-      });
+      req.body = value;
     }
+     
+    if (schemas.params) {
+      const { error, value } = validatePart(schemas.params, req.params);
+      if (error) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          message: `Validation error: ${error.details[0].message}`,
+        });
+      }
+      req.params = value;
+    }
+
+    if (schemas.query) {
+      const { error, value } = validatePart(schemas.query, req.query);
+      if (error) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          message: `Validation error: ${error.details[0].message}`,
+        });
+      }
+      req.query = value;
+    }
+
+    next();
   };
 };
