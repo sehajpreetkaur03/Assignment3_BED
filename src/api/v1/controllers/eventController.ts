@@ -3,7 +3,7 @@ import { HTTP_STATUS } from "../../../constants/httpConstants";
 import { successResponse } from "../models/responseModel";
 import * as service from "../services/eventService";
 
-// ✅ Tell TypeScript that params includes { id: string }
+// typescript
 type EventIdParams = { id: string };
 
 // CREATE EVENT
