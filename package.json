@@ -25,6 +25,7 @@
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/joi": "^17.2.2",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^25.3.0",
     "@types/supertest": "^6.0.3",
     "jest": "^30.2.0",
@@ -36,6 +37,7 @@
   "dependencies": {
     "express": "^5.2.1",
     "firebase-admin": "^13.6.1",
-    "joi": "^18.0.2"
+    "joi": "^18.0.2",
+    "morgan": "^1.10.1"
   }
 }
