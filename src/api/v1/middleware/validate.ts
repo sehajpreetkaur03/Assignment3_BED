@@ -10,7 +10,7 @@ interface RequestSchemas {
 }
 
 export const validateRequest = (schemas: RequestSchemas): MiddlewareFunction => {
-return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const validatePart = (schema: ObjectSchema, data: any) => {
       return schema.validate(data, {
         abortEarly: true, 
@@ -18,6 +18,7 @@ return (req: Request, res: Response, next: NextFunction) => {
       });
     };
 
+    // BODY
     if (schemas.body) {
       const { error, value } = validatePart(schemas.body, req.body);
       if (error) {
@@ -27,7 +28,8 @@ return (req: Request, res: Response, next: NextFunction) => {
       }
       req.body = value;
     }
-     
+
+    // PARAMS
     if (schemas.params) {
       const { error, value } = validatePart(schemas.params, req.params);
       if (error) {
@@ -38,6 +40,7 @@ return (req: Request, res: Response, next: NextFunction) => {
       req.params = value;
     }
 
+    // QUERY
     if (schemas.query) {
       const { error, value } = validatePart(schemas.query, req.query);
       if (error) {
